@@ -27,7 +27,10 @@ class GameScene: SKScene {
     let zombie:SKSpriteNode = SKSpriteNode(imageNamed: "zombie1")
     var dt: NSTimeInterval = 0
     var lastUpdateTime: NSTimeInterval = 0
+    
     let zombieMovePointsPerSec: CGFloat = 480.0
+    let zombieRotateRadiansPerSec: CGFloat = 4.0 * π
+    
     var velocity = CGPoint.zero
     let playableRect: CGRect
     var lastTouchLocation:CGPoint?
@@ -98,12 +101,12 @@ class GameScene: SKScene {
                 velocity = CGPointZero
             } else {
                 moveSprite(zombie, velocity: velocity)
-                rotateSprite(zombie, direction: velocity)
+                rotateSprite(zombie, direction: velocity, rotateRadiansPerSec: zombieRotateRadiansPerSec)
             }
         }
         } else {
             moveSprite(zombie, velocity: velocity)
-            rotateSprite(zombie, direction: velocity)
+            rotateSprite(zombie, direction: velocity, rotateRadiansPerSec: zombieRotateRadiansPerSec)
             boundsCheckZombie()
         }
         
@@ -192,10 +195,18 @@ class GameScene: SKScene {
         }
     }
     
-    func rotateSprite(sprite: SKSpriteNode, direction: CGPoint) {
+    func rotateSprite(sprite: SKSpriteNode, direction: CGPoint, rotateRadiansPerSec: CGFloat) {
         // this works because initially zombie is facing to the right
         //sprite.zRotation = CGFloat(atan2(Double(direction.y), Double(direction.x)))
-        sprite.zRotation = direction.angle
+        
+        let shortest = shortestAngleBetween(sprite.zRotation, angle2: direction.angle)
+        var amtToRotate = zombieRotateRadiansPerSec * CGFloat(dt)
+        
+        if abs(shortest) < amtToRotate {
+            amtToRotate = abs(shortest)
+        }
+        
+        sprite.zRotation += amtToRotate * shortest.sign()
     }
     
     // debug functions
