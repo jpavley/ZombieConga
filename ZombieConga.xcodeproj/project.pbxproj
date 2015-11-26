@@ -13,6 +13,7 @@
 		5AC90BD11C0637A20058D9DB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5AC90BCF1C0637A20058D9DB /* Main.storyboard */; };
 		5AC90BD31C0637A20058D9DB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5AC90BD21C0637A20058D9DB /* Assets.xcassets */; };
 		5AC90BD61C0637A20058D9DB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5AC90BD41C0637A20058D9DB /* LaunchScreen.storyboard */; };
+		5AC90BDE1C06B6210058D9DB /* MyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AC90BDD1C06B6210058D9DB /* MyUtils.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		5AC90BD21C0637A20058D9DB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5AC90BD51C0637A20058D9DB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5AC90BD71C0637A20058D9DB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5AC90BDD1C06B6210058D9DB /* MyUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyUtils.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +60,7 @@
 			children = (
 				5AC90BC71C0637A20058D9DB /* AppDelegate.swift */,
 				5AC90BCB1C0637A20058D9DB /* GameScene.swift */,
+				5AC90BDD1C06B6210058D9DB /* MyUtils.swift */,
 				5AC90BCD1C0637A20058D9DB /* GameViewController.swift */,
 				5AC90BCF1C0637A20058D9DB /* Main.storyboard */,
 				5AC90BD21C0637A20058D9DB /* Assets.xcassets */,
@@ -141,6 +144,7 @@
 				5AC90BCC1C0637A20058D9DB /* GameScene.swift in Sources */,
 				5AC90BCE1C0637A20058D9DB /* GameViewController.swift in Sources */,
 				5AC90BC81C0637A20058D9DB /* AppDelegate.swift in Sources */,
+				5AC90BDE1C06B6210058D9DB /* MyUtils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
