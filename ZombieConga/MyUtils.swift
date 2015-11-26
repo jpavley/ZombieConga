@@ -39,6 +39,14 @@ func *= (inout left: CGPoint, right: CGPoint) {
     left = left * right
 }
 
+func * (left: CGPoint, scalar: CGFloat) -> CGPoint {
+    return CGPoint(x: left.x * scalar, y: left.y * scalar)
+}
+
+func *= (inout left: CGPoint, scalar: CGFloat) {
+    left = left * scalar
+}
+
 // division
 
 
