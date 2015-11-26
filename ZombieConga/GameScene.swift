@@ -30,6 +30,8 @@ class GameScene: SKScene {
     let zombieMovePointsPerSec: CGFloat = 480.0
     var velocity = CGPoint.zero
     let playableRect: CGRect
+    var lastTouchLocation:CGPoint?
+    let attackTouchFlag = true
     
     override init(size: CGSize) {
         let maxAspectRatio: CGFloat = 16.0 / 9.0
@@ -78,9 +80,33 @@ class GameScene: SKScene {
         //print("\(dt*1000) milliseconds since last update")
         
         //zombie.position = CGPoint(x: zombie.position.x + 8, y: zombie.position.y)
-        moveSprite(zombie, velocity: velocity)
-        boundsCheckZombie()
-        rotateSprite(zombie, direction: velocity)
+        
+        if !isSpriteMoving() {
+            // if the sprite is stationary save some CPU cycles
+            return
+        }
+        
+        if attackTouchFlag {
+        if let lastTouchLocation = lastTouchLocation {
+            // if the user has not yet touched the screen none of this code will execute
+            let distanceToLastTouch = lastTouchLocation - zombie.position
+            let distanceSpriteWillMove = zombieMovePointsPerSec * CGFloat(dt)
+            //print("distanceToLastTouch.length(): \(distanceToLastTouch.length())")
+            
+            if distanceToLastTouch.length() <= distanceSpriteWillMove {
+                zombie.position = lastTouchLocation
+                velocity = CGPointZero
+            } else {
+                moveSprite(zombie, velocity: velocity)
+                rotateSprite(zombie, direction: velocity)
+            }
+        }
+        } else {
+            moveSprite(zombie, velocity: velocity)
+            rotateSprite(zombie, direction: velocity)
+            boundsCheckZombie()
+        }
+        
     }
     
     func moveSprite(sprite: SKSpriteNode, velocity: CGPoint) {
@@ -108,9 +134,20 @@ class GameScene: SKScene {
         
     }
     
+    func isSpriteMoving() -> Bool {
+        var result = false
+        if velocity != CGPointZero {
+            result = true
+        }
+        return result
+    }
+    
     // touches
     
     func sceneTouched(touchLocation: CGPoint) {
+        lastTouchLocation = touchLocation
+        //print("lastTouchLocation: \(lastTouchLocation)")
+        
         moveZombieToward(touchLocation)
     }
     
