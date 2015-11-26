@@ -7,15 +7,17 @@
 //
 
 /*
-    OS calls didMoveToView() when the scene is loading.
-    OS calls update() every chance it gets.
-    OS calls touchesBegan() and touchesMoved() when user touches screen.
+    OS calls didMoveToView() when the scene is loading
+    OS calls update() every chance it gets
+    OS calls touchesBegan() and touchesMoved() when user touches screen
+    OS calls init() to calc a universally playable rectable in the center of the screen
 
-    update() calcs lastUpdateTime and calls moveSprite()
+    update() calcs lastUpdateTime and calls moveSprite(), boundsCheckZombie(), rotateSprite()
     touchesBegan() and touchesMoved() updates the touchLocation and calls sceneTouched()
     sceneTouched() calls moveZombieToward() which sets touchLocation as the target of the zombie
     moveSprite() moves the zombie with a constant rate towards the target
     boundsCheckZombie() keeps the zombie sprite inside the screen and reverses direction
+    rotateSprite() uses basic trig to face the zombie in the direction it is traveling
 */
 
 import SpriteKit
@@ -27,6 +29,20 @@ class GameScene: SKScene {
     var lastUpdateTime: NSTimeInterval = 0
     let zombieMovePointsPerSec: CGFloat = 480.0
     var velocity = CGPoint.zero
+    let playableRect: CGRect
+    
+    override init(size: CGSize) {
+        let maxAspectRatio: CGFloat = 16.0 / 9.0
+        let playableHeight = size.width / maxAspectRatio
+        let playableMargin = (size.height - playableHeight) / 2.0
+        playableRect = CGRect(x: 0, y: playableMargin, width: size.width, height: playableHeight)
+        
+        super.init(size: size)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func didMoveToView(view: SKView) {
         
@@ -48,6 +64,7 @@ class GameScene: SKScene {
         //zombie.setScale(2.0)
         addChild(zombie)
         
+        debugDrawPlayableArea()
     }
     
     override func update(currentTime: NSTimeInterval) {
@@ -63,6 +80,7 @@ class GameScene: SKScene {
         //zombie.position = CGPoint(x: zombie.position.x + 8, y: zombie.position.y)
         moveSprite(zombie, velocity: velocity)
         boundsCheckZombie()
+        rotateSprite(zombie, direction: velocity)
     }
     
     func moveSprite(sprite: SKSpriteNode, velocity: CGPoint) {
@@ -107,8 +125,8 @@ class GameScene: SKScene {
     }
     
     func boundsCheckZombie() {
-        let bottomLeft = CGPoint.zero
-        let topRight = CGPoint(x: size.width, y: size.height)
+        let bottomLeft = CGPoint(x: 0, y: CGRectGetMinY(playableRect))
+        let topRight = CGPoint(x: size.width, y: CGRectGetMaxY(playableRect))
         
         if zombie.position.x <= bottomLeft.x {
             zombie.position.x = bottomLeft.x
@@ -129,5 +147,23 @@ class GameScene: SKScene {
             zombie.position.y = topRight.y
             velocity.y = -velocity.y
         }
+    }
+    
+    func rotateSprite(sprite: SKSpriteNode, direction: CGPoint) {
+        // this works because initially zombie is facing to the right
+        sprite.zRotation = CGFloat(atan2(Double(direction.y), Double(direction.x)))
+    }
+    
+    // debug functions
+    
+    func debugDrawPlayableArea() {
+        let shape = SKShapeNode()
+        let path = CGPathCreateMutable()
+        
+        CGPathAddRect(path, nil, playableRect)
+        shape.path = path
+        shape.strokeColor = SKColor.redColor()
+        shape.lineWidth = 4.0
+        addChild(shape)
     }
 }
