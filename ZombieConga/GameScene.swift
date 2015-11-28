@@ -211,10 +211,11 @@ class GameScene: SKScene {
         let logMessage = SKAction.runBlock() {
             print("Reached bottom")
         }
-                
+        
         let halfSequence = SKAction.sequence([actionMidMove, logMessage, wait, actionMove])
         let sequence = SKAction.sequence([halfSequence, halfSequence.reversedAction()])
-        enemy.runAction(sequence)
+        let repeatAction = SKAction.repeatActionForever(sequence)
+        enemy.runAction(repeatAction)
     }
     
     // debug functions
