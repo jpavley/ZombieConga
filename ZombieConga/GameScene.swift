@@ -191,12 +191,34 @@ class GameScene: SKScene {
     
     func spawnEnemy() {
         // create
+        
         let enemy = SKSpriteNode(imageNamed: "enemy")
         enemy.position = CGPoint(x: size.width + enemy.size.width / 2, y: size.height / 2)
         addChild(enemy)
+        
         // move
-        let actionMove = SKAction.moveTo(CGPoint(x: -enemy.size.width / 2, y: enemy.position.y), duration: 2.0)
-        enemy.runAction(actionMove)
+        let actionMidMove = SKAction.moveByX(
+            -size.width / 2 - enemy.size.width / 2,
+            y: -CGRectGetHeight(playableRect) / 2 + enemy.size.height / 2,
+            duration: 1.0)
+        
+        let actionMove = SKAction.moveByX(
+            -size.width / 2 - enemy.size.width / 2,
+            y: CGRectGetHeight(playableRect) / 2 - enemy.size.height / 2,
+            duration: 1.0)
+        
+        let wait = SKAction.waitForDuration(0.25)
+        let logMessage = SKAction.runBlock() {
+            print("Reached bottom")
+        }
+        
+        let reverseMid = actionMidMove.reversedAction()
+        let reverseMove = actionMove.reversedAction()
+        
+        let sequence = SKAction.sequence([
+            actionMidMove, logMessage, wait, actionMove,
+            reverseMove, logMessage, wait, reverseMid])
+        enemy.runAction(sequence)
     }
     
     // debug functions
