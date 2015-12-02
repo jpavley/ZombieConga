@@ -208,7 +208,8 @@ class GameScene: SKScene {
         // move
         
         let actionMove = SKAction.moveToX(-enemyCenterX, duration: 2.0)
-        enemy.runAction(actionMove)
+        let actionRemove = SKAction.removeFromParent()
+        enemy.runAction(SKAction.sequence([actionMove, actionRemove]))
     }
     
     // debug functions
