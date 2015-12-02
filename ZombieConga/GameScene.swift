@@ -36,11 +36,25 @@ class GameScene: SKScene {
     var lastTouchLocation:CGPoint? // optional until the user touches the screen for the first time
     let attackTouchFlag = false
     
+    let zombieAnimation: SKAction
+    
     override init(size: CGSize) {
         let maxAspectRatio: CGFloat = 16.0 / 9.0
         let playableHeight = size.width / maxAspectRatio
         let playableMargin = (size.height - playableHeight) / 2.0
         playableRect = CGRect(x: 0, y: playableMargin, width: size.width, height: playableHeight)
+        
+        // setup animations
+        var textures:[SKTexture] = []
+        
+        for i in 1...4 {
+            textures.append(SKTexture(imageNamed: "zombie\(i)"))
+        }
+        
+        textures.append(textures[2])
+        textures.append(textures[1])
+        
+        zombieAnimation = SKAction.animateWithTextures(textures, timePerFrame: 0.1)
         
         super.init(size: size)
     }
@@ -63,6 +77,7 @@ class GameScene: SKScene {
         print("size: \(mySize)")
         
         zombie.position = CGPoint(x: 400, y: 400)
+        zombie.runAction(SKAction.repeatActionForever(zombieAnimation))
         addChild(zombie)
         
         runAction(SKAction.repeatActionForever(SKAction.sequence([
