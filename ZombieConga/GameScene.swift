@@ -64,7 +64,10 @@ class GameScene: SKScene {
         
         zombie.position = CGPoint(x: 400, y: 400)
         addChild(zombie)
-        spawnEnemy()
+        
+        runAction(SKAction.repeatActionForever(SKAction.sequence([
+            SKAction.runBlock(spawnEnemy),
+            SKAction.waitForDuration(2.0)])))
         
         debugDrawPlayableArea()
     }
