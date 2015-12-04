@@ -7,17 +7,17 @@
 //
 
 /*
-    OS calls didMoveToView() when the scene is loading
-    OS calls update() every chance it gets
-    OS calls touchesBegan() and touchesMoved() when user touches screen
-    OS calls init() to calc a universally playable rectable in the center of the screen
+OS calls didMoveToView() when the scene is loading
+OS calls update() every chance it gets
+OS calls touchesBegan() and touchesMoved() when user touches screen
+OS calls init() to calc a universally playable rectable in the center of the screen
 
-    update() calcs lastUpdateTime and calls moveSprite(), boundsCheckZombie(), rotateSprite()
-    touchesBegan() and touchesMoved() updates the touchLocation and calls sceneTouched()
-    sceneTouched() calls moveZombieToward() which sets touchLocation as the target of the zombie
-    moveSprite() moves the zombie with a constant rate towards the target
-    boundsCheckZombie() keeps the zombie sprite inside the screen and reverses direction
-    rotateSprite() uses basic trig to face the zombie in the direction it is traveling
+update() calcs lastUpdateTime and calls moveSprite(), boundsCheckZombie(), rotateSprite()
+touchesBegan() and touchesMoved() updates the touchLocation and calls sceneTouched()
+sceneTouched() calls moveZombieToward() which sets touchLocation as the target of the zombie
+moveSprite() moves the zombie with a constant rate towards the target
+boundsCheckZombie() keeps the zombie sprite inside the screen and reverses direction
+rotateSprite() uses basic trig to face the zombie in the direction it is traveling
 */
 
 import SpriteKit
@@ -34,7 +34,7 @@ class GameScene: SKScene {
     var velocity = CGPoint.zero
     let playableRect: CGRect
     var lastTouchLocation:CGPoint? // optional until the user touches the screen for the first time
-    let attackTouchFlag = false
+    let attackTouchFlag = true
     
     let zombieAnimation: SKAction
     
@@ -58,7 +58,7 @@ class GameScene: SKScene {
         
         super.init(size: size)
     }
-
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -77,12 +77,16 @@ class GameScene: SKScene {
         print("size: \(mySize)")
         
         zombie.position = CGPoint(x: 400, y: 400)
-        zombie.runAction(SKAction.repeatActionForever(zombieAnimation))
+        //        zombie.runAction(SKAction.repeatActionForever(zombieAnimation))
         addChild(zombie)
         
         runAction(SKAction.repeatActionForever(SKAction.sequence([
             SKAction.runBlock(spawnEnemy),
             SKAction.waitForDuration(2.0)])))
+        
+        runAction(SKAction.repeatActionForever(SKAction.sequence([
+            SKAction.runBlock(spawnCat),
+            SKAction.waitForDuration(1.0)])))
         
         debugDrawPlayableArea()
     }
@@ -110,6 +114,7 @@ class GameScene: SKScene {
                 if distanceToLastTouch.length() <= distanceSpriteWillMove {
                     zombie.position = lastTouchLocation
                     velocity = CGPointZero
+                    stopZombieAnimation()
                 } else {
                     moveSprite(zombie, velocity: velocity)
                     rotateSprite(zombie, direction: velocity, rotateRadiansPerSec: zombieRotateRadiansPerSec)
@@ -129,12 +134,11 @@ class GameScene: SKScene {
     }
     
     func moveZombieToward(location: CGPoint) {
-        let offset = location - zombie.position
+        startZombieAnimation()
         
+        let offset = location - zombie.position
         let direction = offset.normalize()
         velocity = direction * zombieMovePointsPerSec
-        
-        
     }
     
     func isSpriteMoving() -> Bool {
@@ -225,6 +229,38 @@ class GameScene: SKScene {
         let actionMove = SKAction.moveToX(-enemyCenterX, duration: 2.0)
         let actionRemove = SKAction.removeFromParent()
         enemy.runAction(SKAction.sequence([actionMove, actionRemove]))
+    }
+    
+    func startZombieAnimation() {
+        if zombie.actionForKey("animation") == nil {
+            zombie.runAction(SKAction.repeatActionForever(zombieAnimation), withKey: "animation")
+        }
+    }
+    
+    func stopZombieAnimation() {
+        zombie.removeActionForKey("animation")
+    }
+    
+    func spawnCat() {
+        // make a cat
+        let cat = SKSpriteNode(imageNamed: "cat")
+        cat.position = CGPoint(
+            x: CGFloat.random(
+                min: CGRectGetMinX(playableRect),
+                max: CGRectGetMaxX(playableRect)),
+            y: CGFloat.random(
+                min: CGRectGetMinY(playableRect),
+                max: CGRectGetMaxY(playableRect)))
+        cat.setScale(0)
+        addChild(cat)
+        
+        // pop a cat into view
+        let appear = SKAction.scaleTo(1.0, duration: 0.5)
+        let wait = SKAction.waitForDuration(10.0)
+        let disappear = SKAction.scaleTo(0, duration: 0.5)
+        let removeFromParent = SKAction.removeFromParent()
+        let actions = [appear, wait, disappear, removeFromParent]
+        cat.runAction(SKAction.sequence(actions))
     }
     
     // debug functions
