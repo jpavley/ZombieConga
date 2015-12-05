@@ -34,7 +34,7 @@ class GameScene: SKScene {
     var velocity = CGPoint.zero
     let playableRect: CGRect
     var lastTouchLocation:CGPoint? // optional until the user touches the screen for the first time
-    let attackTouchFlag = true
+    let attackTouchFlag = false
     
     let zombieAnimation: SKAction
     
@@ -126,6 +126,7 @@ class GameScene: SKScene {
             boundsCheckZombie()
         }
         
+        checkCollisions()
     }
     
     func moveSprite(sprite: SKSpriteNode, velocity: CGPoint) {
@@ -215,6 +216,7 @@ class GameScene: SKScene {
         
         // create
         let enemy = SKSpriteNode(imageNamed: "enemy")
+        enemy.name = "enemy"
         let enemyCenterX = enemy.size.width / 2
         let enemyCenterY = enemy.size.height / 2
         enemy.position = CGPoint(
@@ -244,6 +246,7 @@ class GameScene: SKScene {
     func spawnCat() {
         // make a cat
         let cat = SKSpriteNode(imageNamed: "cat")
+        cat.name = "cat"
         cat.position = CGPoint(
             x: CGFloat.random(
                 min: CGRectGetMinX(playableRect),
@@ -277,6 +280,52 @@ class GameScene: SKScene {
         let removeFromParent = SKAction.removeFromParent()
         let actions = [appear, groupWait, disappear, removeFromParent]
         cat.runAction(SKAction.sequence(actions))
+    }
+    
+    // collision detection
+    
+    func zombieHitCat(cat: SKSpriteNode) {
+        cat.removeFromParent()
+    }
+    
+    func zombieHitEnemy(enemy: SKSpriteNode) {
+        enemy.removeFromParent()
+    }
+    
+    func checkCollisions() {
+        
+        // deal with cats
+        var hitCats: [SKSpriteNode] = []
+        
+        enumerateChildNodesWithName("cat") { node, _ in
+            let cat = node as! SKSpriteNode
+            if CGRectIntersectsRect(cat.frame, self.zombie.frame) {
+                hitCats.append(cat)
+            }
+        }
+        
+        // remove dead cats
+        for cat in hitCats {
+            zombieHitCat(cat)
+        }
+        
+        // deal with enemies
+        var hitEnemies: [SKSpriteNode] = []
+        
+        enumerateChildNodesWithName("enemy") { node, _ in
+            let enemy = node as! SKSpriteNode
+            if CGRectIntersectsRect(CGRectInset(node.frame, 20, 20), self.zombie.frame) {
+                hitEnemies.append(enemy)
+            }
+        }
+        
+        // remove dead enemies
+        for enemy in hitEnemies {
+            zombieHitEnemy(enemy)
+        }
+       
+        
+        
     }
     
     // debug functions
