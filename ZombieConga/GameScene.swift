@@ -256,10 +256,26 @@ class GameScene: SKScene {
         
         // pop a cat into view
         let appear = SKAction.scaleTo(1.0, duration: 0.5)
-        let wait = SKAction.waitForDuration(10.0)
+        
+        // construct the wiggle wait sequence
+        cat.zRotation = -π / 16.0
+        
+        // positive rotations go counter clockwise
+        let leftWiggle = SKAction.rotateByAngle(π / 8.0, duration: 0.5)
+        // negative rotations go clockwise
+        let rightWiggle = leftWiggle.reversedAction()
+        let fullWiggle = SKAction.sequence([leftWiggle, rightWiggle])
+        
+        // scale up/down
+        let scaleUp = SKAction.scaleBy(1.2, duration: 0.25)
+        let scaleDown = scaleUp.reversedAction()
+        let fullScale = SKAction.sequence([scaleUp, scaleDown, scaleUp, scaleDown])
+        let group = SKAction.group([fullScale, fullWiggle])
+        let groupWait = SKAction.repeatAction(group, count: 10)
+        
         let disappear = SKAction.scaleTo(0, duration: 0.5)
         let removeFromParent = SKAction.removeFromParent()
-        let actions = [appear, wait, disappear, removeFromParent]
+        let actions = [appear, groupWait, disappear, removeFromParent]
         cat.runAction(SKAction.sequence(actions))
     }
     
