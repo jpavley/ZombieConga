@@ -36,12 +36,14 @@ class GameScene: SKScene {
     var velocity = CGPoint.zero
     let playableRect: CGRect
     var lastTouchLocation:CGPoint? // optional until the user touches the screen for the first time
-    let attackTouchFlag = false
+    let attackTouchFlag = true
     
     let zombieAnimation: SKAction
     
     let catCollisionSound = SKAction.playSoundFileNamed("hitCat.wav", waitForCompletion: false)
     let enemyCollisionSound = SKAction.playSoundFileNamed("hitCatLady.wav", waitForCompletion: false)
+    
+    var zombieInvinciable = false
     
     // functions
     
@@ -84,7 +86,6 @@ class GameScene: SKScene {
         print("size: \(mySize)")
         
         zombie.position = CGPoint(x: 400, y: 400)
-        //        zombie.runAction(SKAction.repeatActionForever(zombieAnimation))
         addChild(zombie)
         
         runAction(SKAction.repeatActionForever(SKAction.sequence([
@@ -302,7 +303,24 @@ class GameScene: SKScene {
     }
     
     func zombieHitEnemy(enemy: SKSpriteNode) {
-        enemy.removeFromParent()
+        //enemy.removeFromParent()
+        self.zombieInvinciable = true
+
+        
+        let blinkTimes = 10.0
+        let duration = 3.0
+        let blinkAction = SKAction.customActionWithDuration(duration) { node, elapsedTime in
+            let slice = duration / blinkTimes
+            let remainder = Double(elapsedTime) % slice
+            node.hidden = remainder > slice / 2
+        }
+        
+        let finishAction = SKAction.runBlock({
+            self.zombie.hidden = false
+            self.zombieInvinciable = false
+        })
+        
+        zombie.runAction(SKAction.sequence([blinkAction, finishAction]))
         runAction(enemyCollisionSound)
     }
     
@@ -324,6 +342,12 @@ class GameScene: SKScene {
         }
         
         // deal with enemies
+        
+        if zombieInvinciable {
+            // skip the rest
+            return
+        }
+        
         var hitEnemies: [SKSpriteNode] = []
         
         enumerateChildNodesWithName("enemy") { node, _ in
@@ -337,9 +361,6 @@ class GameScene: SKScene {
         for enemy in hitEnemies {
             zombieHitEnemy(enemy)
         }
-       
-        
-        
     }
     
     // debug functions
