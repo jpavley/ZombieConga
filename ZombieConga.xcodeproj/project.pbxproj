@@ -51,6 +51,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5A274E441C14AD99004F38BB /* Unused */ = {
+			isa = PBXGroup;
+			children = (
+				5AC90BC71C0637A20058D9DB /* AppDelegate.swift */,
+				5AC90BCD1C0637A20058D9DB /* GameViewController.swift */,
+				5AC90BCF1C0637A20058D9DB /* Main.storyboard */,
+				5AC90BD71C0637A20058D9DB /* Info.plist */,
+			);
+			name = Unused;
+			sourceTree = "<group>";
+		};
 		5AC054431C13D1C300E47D3E /* sounds */ = {
 			isa = PBXGroup;
 			children = (
@@ -82,16 +93,13 @@
 		5AC90BC61C0637A20058D9DB /* ZombieConga */ = {
 			isa = PBXGroup;
 			children = (
-				5A274E421C14A7D4004F38BB /* GameOverScene.swift */,
-				5AC90BC71C0637A20058D9DB /* AppDelegate.swift */,
 				5AC90BCB1C0637A20058D9DB /* GameScene.swift */,
+				5A274E421C14A7D4004F38BB /* GameOverScene.swift */,
 				5AC90BDD1C06B6210058D9DB /* MyUtils.swift */,
-				5AC90BCD1C0637A20058D9DB /* GameViewController.swift */,
-				5AC90BCF1C0637A20058D9DB /* Main.storyboard */,
-				5AC90BD21C0637A20058D9DB /* Assets.xcassets */,
 				5AC90BD41C0637A20058D9DB /* LaunchScreen.storyboard */,
-				5AC90BD71C0637A20058D9DB /* Info.plist */,
+				5AC90BD21C0637A20058D9DB /* Assets.xcassets */,
 				5AC054431C13D1C300E47D3E /* sounds */,
+				5A274E441C14AD99004F38BB /* Unused */,
 			);
 			path = ZombieConga;
 			sourceTree = "<group>";

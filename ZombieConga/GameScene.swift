@@ -102,7 +102,7 @@ class GameScene: SKScene {
             SKAction.runBlock(spawnCat),
             SKAction.waitForDuration(1.0)])))
         
-        debugDrawPlayableArea()
+        //debugDrawPlayableArea()
     }
     
     override func update(currentTime: NSTimeInterval) {
@@ -143,7 +143,7 @@ class GameScene: SKScene {
             gameOver = true
             print("You Lose!")
             
-            let gameOverScene = GameOverScene(size: size)
+            let gameOverScene = GameOverScene(size: size, won: false)
             gameOverScene.scaleMode = scaleMode
             
             let reveal = SKTransition.flipHorizontalWithDuration(0.5)
@@ -417,7 +417,7 @@ class GameScene: SKScene {
             gameOver = true
             print("You Win!")
             
-            let gameOverScene = GameOverScene(size: size)
+            let gameOverScene = GameOverScene(size: size, won: true)
             gameOverScene.scaleMode = scaleMode
             
             let reveal = SKTransition.flipHorizontalWithDuration(0.5)
@@ -439,7 +439,7 @@ class GameScene: SKScene {
                     SKAction.group([
                         SKAction.rotateByAngle(π * 4, duration: 1.0),
                         SKAction.moveTo(randomSpot, duration: 1.0)]),
-                    SKAction.removeFromParent()]))
+                    SKAction.removeFromParent()])) // BUG: memory leak?
             loseCount++
             if loseCount >= 2 {
                 stop.memory = true
