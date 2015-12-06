@@ -24,6 +24,8 @@ import SpriteKit
 
 class GameScene: SKScene {
     
+    // properties
+    
     let zombie:SKSpriteNode = SKSpriteNode(imageNamed: "zombie1")
     var dt: NSTimeInterval = 0
     var lastUpdateTime: NSTimeInterval = 0
@@ -37,6 +39,11 @@ class GameScene: SKScene {
     let attackTouchFlag = false
     
     let zombieAnimation: SKAction
+    
+    let catCollisionSound = SKAction.playSoundFileNamed("hitCat.wav", waitForCompletion: false)
+    let enemyCollisionSound = SKAction.playSoundFileNamed("hitCatLady.wav", waitForCompletion: false)
+    
+    // functions
     
     override init(size: CGSize) {
         let maxAspectRatio: CGFloat = 16.0 / 9.0
@@ -291,12 +298,12 @@ class GameScene: SKScene {
     
     func zombieHitCat(cat: SKSpriteNode) {
         cat.removeFromParent()
-        runAction(SKAction.playSoundFileNamed("hitCat.wav", waitForCompletion: false))
+        runAction(catCollisionSound)
     }
     
     func zombieHitEnemy(enemy: SKSpriteNode) {
         enemy.removeFromParent()
-        runAction(SKAction.playSoundFileNamed("hitCatLady.wav", waitForCompletion: false))
+        runAction(enemyCollisionSound)
     }
     
     func checkCollisions() {
