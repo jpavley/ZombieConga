@@ -33,6 +33,8 @@ class GameScene: SKScene {
     let zombieMovePointsPerSec: CGFloat = 480.0
     let zombieRotateRadiansPerSec: CGFloat = 4.0 * π
     
+    let catMovePointsPerSec: CGFloat = 480.0
+    
     var velocity = CGPoint.zero
     let playableRect: CGRect
     var lastTouchLocation:CGPoint? // optional until the user touches the screen for the first time
@@ -86,6 +88,7 @@ class GameScene: SKScene {
         print("size: \(mySize)")
         
         zombie.position = CGPoint(x: 400, y: 400)
+        zombie.zPosition = 100
         addChild(zombie)
         
         runAction(SKAction.repeatActionForever(SKAction.sequence([
@@ -107,11 +110,6 @@ class GameScene: SKScene {
             dt = 0
         }
         lastUpdateTime = currentTime
-        
-        if !isSpriteMoving() {
-            // if the sprite is stationary save some CPU cycles
-            return
-        }
         
         if attackTouchFlag {
             if let lastTouchLocation = lastTouchLocation {
@@ -136,6 +134,7 @@ class GameScene: SKScene {
         
         // have to check for collisions after the actions are evaluated
         //checkCollisions()
+        moveTrain()
     }
     
     override func didEvaluateActions() {
@@ -151,7 +150,7 @@ class GameScene: SKScene {
         startZombieAnimation()
         
         let offset = location - zombie.position
-        let direction = offset.normalize()
+        let direction = offset.normalized()
         velocity = direction * zombieMovePointsPerSec
     }
     
@@ -298,12 +297,20 @@ class GameScene: SKScene {
     // collision detection
     
     func zombieHitCat(cat: SKSpriteNode) {
-        cat.removeFromParent()
+        //cat.removeFromParent()
+        
+        cat.name = "train"
+        cat.removeAllActions()
+        cat.setScale(1)
+        cat.zRotation = 0
+        let turnGreen = SKAction.colorizeWithColor(SKColor.greenColor(), colorBlendFactor: 1.0, duration: 0.2)
+        cat.runAction(turnGreen)
+        
         runAction(catCollisionSound)
     }
     
     func zombieHitEnemy(enemy: SKSpriteNode) {
-        //enemy.removeFromParent()
+        enemy.removeFromParent()
         self.zombieInvinciable = true
 
         
@@ -360,6 +367,26 @@ class GameScene: SKScene {
         // remove dead enemies
         for enemy in hitEnemies {
             zombieHitEnemy(enemy)
+        }
+    }
+    
+    func moveTrain() {
+        
+        var targetPosition = zombie.position
+        
+        enumerateChildNodesWithName("train") { node, stop in
+            if !node.hasActions() {
+                
+                let actionDuration = 0.3
+                let offset = targetPosition - node.position
+                let direction = offset.normalized()
+                let amountToMovePerSec = direction * self.catMovePointsPerSec
+                let amountToMove = amountToMovePerSec * CGFloat(actionDuration)
+                let moveAction = SKAction.moveByX(amountToMove.x, y: amountToMove.y, duration: actionDuration)
+                node.runAction(moveAction)
+            }
+            targetPosition = node.position
+            //print("targetPosition: \(targetPosition)")
         }
     }
     

@@ -86,7 +86,7 @@ extension CGPoint {
         return sqrt(x*x + y*y)
     }
     
-    func normalize() -> CGPoint {
+    func normalized() -> CGPoint {
         return self / length()
     }
     
